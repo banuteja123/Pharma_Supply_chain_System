@@ -1,5 +1,6 @@
 # Pharma_Supply_chain_System
 
+
 Creating a Product:
 This step adds a new product to the blockchain with its details (name, manufacturer, manufacture date, expiry date).
 If successful, it will print a confirmation message.
