@@ -1,0 +1,38 @@
+from web3 import Web3
+import json
+web3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+if not web3.isConnected():
+    raise Exception("Could not connect to Ethereum node.")
+contract_address = web3.toChecksumAddress("YOUR_CONTRACT_ADDRESS")
+with open("PharmaSupplyChainABI.json", "r") as abi_file:
+    contract_abi = json.load(abi_file)
+contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+account = web3.eth.accounts[0]
+web3.eth.defaultAccount = account
+def create_product(product_id, name, manufacturer, manufacture_date, expiry_date):
+    tx_hash = contract.functions.createProduct(
+        product_id,
+        name,
+        manufacturer,
+        manufacture_date,
+        expiry_date
+    ).transact()
+    receipt = web3.eth.waitForTransactionReceipt(tx_hash)
+    return receipt
+def update_product_status(product_id, status):
+    tx_hash = contract.functions.updateProductStatus(product_id, status).transact()
+    receipt = web3.eth.waitForTransactionReceipt(tx_hash)
+    return receipt
+def get_product(product_id):
+    return contract.functions.getProduct(product_id).call()
+product_id = "PROD001"
+name = "Aspirin"
+manufacturer = "PharmaCorp"
+manufacture_date = 1692547200  
+expiry_date = 1792547200 
+create_product(product_id, name, manufacturer, manufacture_date, expiry_date)
+print(f"Product {product_id} created successfully.")
+update_product_status(product_id, "In Transit")
+print(f"Product {product_id} status updated successfully.")
+product_details = get_product(product_id)
+print("Product Details:", product_details)
